@@ -52,6 +52,92 @@ draft.data(
   append = TRUE # add on to existing DATA.bib
 )
 
-taf.boot()#copy data to other data folder
+taf.boot() #copy data to other data folder
+
+
+#add file from URL
+draft.data(
+  data.files = "HadSST.4.0.1.0_median.nc",
+  data.scripts = NULL,
+  originator = "UK MET office",
+  title = "Met Office Hadley Centre observations datasets",
+  year = 2022,
+  source = "https://www.metoffice.gov.uk/hadobs/hadsst4/data/netcdf/HadSST.4.0.1.0_median.nc",
+  file = TRUE,
+  append = TRUE
+)
+
+taf.boot() #copy data to other data folder
+
+#-------- von Helene
+
+# This is needed in case the data downloaded is not directly ready for saving it in data (e.g. ZIP files)
+# ```{r}
+cat('library(icesTAF)
+library(sf)
+
+download(
+  "https://gis.ices.dk/shapefiles/OSPAR_Subregions.zip"
+)
+
+unzip("OSPAR_Subregions.zip")
+unlink("OSPAR_Subregions.zip")
+
+areas <- st_read("OSPAR_subregions_20160418_3857.shp")
+
+# write as csv
+st_write(
+  areas, "ospar-areas.csv",
+  layer_options = "GEOMETRY=AS_WKT"
+)
+
+unlink(dir(pattern = "OSPAR_subregions_20160418_3857"))
+',
+file = "boot/ospar-areas.R"
+)
+#```
+
+#This creates a new script in the boot folder, whithin this script it is specified where to download the data and how to handle it. 
+#The last part of the download link is assumed to be the file name of the data. 
+
+# ```{r}
+# load it into the DATA.bib file
+draft.data(
+  data.files = NULL,
+  data.scripts = "ospar-areas.R",
+  originator = "OSPAR",
+  title = "OSPAR areas",
+  file = TRUE,
+  append = TRUE
+)
+taf.boot()
+#```
+
+# To check if everything is correctly in place run `r taf.boot(taf = TRUE)`. Now we see also a bigger difference between boot/data and boot/initial/data. 
+# 
+# Bib files can also be used in Markdowns as reference files. 
+# 
+# Another example with a package that downloads data:
+  #```{r}
+# save this into a R script named sd.R
+# library(icesSD)
+# 
+# sd <- getSD(year = 2022)
+# write.taf(sd, quote = TRUE)
+
+#manually add entry to DATA.bib with : 
+# @Misc{sd,
+#   originator = {},
+#   year       = {2023},
+#   title      = {},
+#   period     = {},
+#   access     = {Public},
+#   source     = {script},
+# }
+
+taf.boot()
+
+
+
 
 
